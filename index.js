@@ -11,6 +11,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://plant-care-client-ochre.vercel.app/",
+      "https://plant-care-client-ochre.vercel.app",
     ],
     credentials: true,
   })
