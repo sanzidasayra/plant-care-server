@@ -11,6 +11,7 @@ app.use(cors({
   credentials: true,
 }));
 
+
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.USER}:${process.env.PASS}` +
