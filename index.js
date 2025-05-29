@@ -1,4 +1,3 @@
-// server.js
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
@@ -7,7 +6,6 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(
   cors({
     origin: [
@@ -19,7 +17,6 @@ app.use(
 );
 app.use(express.json());
 
-// ─── MongoDB Client Setup ─────────────────────────────────────────────────────
 const uri =
   `mongodb+srv://${process.env.USER}:${process.env.PASS}` +
   `@cluster0.vdaznfz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -34,17 +31,13 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // 1) Connect to Mongo
     await client.connect();
     console.log("✅ Connected to MongoDB!");
 
-    // 2) Grab your collections
     const plantsCollection = client.db("plantDB").collection("plants");
     const usersCollection = client.db("plantDB").collection("users");
 
-    // ─── Routes ────────────────────────────────────────────────────────────────
 
-    // List plants (optionally filtered by ?email=…)
     app.get("/plants", async (req, res) => {
       const email = req.query.email;
       const query = email ? { userEmail: email } : {};
@@ -52,14 +45,12 @@ async function run() {
       res.send(plants);
     });
 
-    // Create a new plant
     app.post("/plants", async (req, res) => {
       const newPlant = req.body;
       const result = await plantsCollection.insertOne(newPlant);
       res.send(result);
     });
 
-    // Get the 6 most-recently-added plants
     app.get("/plants/new", async (req, res) => {
       try {
         const latest = await plantsCollection
@@ -74,7 +65,6 @@ async function run() {
       }
     });
 
-    // Delete a plant by ID
     app.delete("/plants/:id", async (req, res) => {
       const id = req.params.id;
       const result = await plantsCollection.deleteOne({
@@ -84,7 +74,6 @@ async function run() {
       res.send(result);
     });
 
-    // Create a new user
     app.post("/users", async (req, res) => {
       const userProfile = req.body;
       const { acknowledged, insertedId } = await usersCollection.insertOne(
@@ -97,7 +86,6 @@ async function run() {
       res.send(userProfile);
     });
 
-    // Get a user by ?email=…
     app.get("/users", async (req, res) => {
       const email = req.query.email;
       if (!email) return res.send([]);
@@ -105,7 +93,6 @@ async function run() {
       res.send(user || []);
     });
 
-    // Update a plant by ID
     app.put("/plants/:id", async (req, res) => {
       const id = req.params.id;
       const updated = req.body;
@@ -116,12 +103,10 @@ async function run() {
       res.send(result);
     });
 
-    // Optional health-check root
     app.get("/", (req, res) => {
       res.send("🌱 Plant care tracker server is running!");
     });
 
-    // 3) Start listening **only after** all routes are in place
     app.listen(port, () => {
       console.log(`🚀 Server is live on port ${port}`);
     });
